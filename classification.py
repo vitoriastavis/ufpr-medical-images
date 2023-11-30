@@ -194,48 +194,44 @@ def classifier(method, dataframes=None, threshold='', verbose=True):
 
     return f1_list
 
-def check_parameters(args):       
-
-    if len(args) != 6: 
-        print("\nUsage: python classification.py features_o features_a features_op features_ap folds.tar.gz\n")
-        print("features_o: path for directory of features Otsu, images not preprocessed")
-        print("features_a: path for directory of features adaptive, images not preprocessed")
-        print("features_op: path for directory of features Otsu, images preprocessed")
-        print("features_ap: path for directory of features adaptive, images not preprocessed")
-        print("folds.tar.gz: .tar.gz file containing a folds.joblib file that has folds information\n")
-        sys.exit(1)      
- 
-    paths = []
+def load_data():      
     
-    for path in args[1:5]:
-        if os.path.isdir(path):  
-            paths.append(path)
-        elif path[-7:] == '.tar.gz':
-            command = f'tar xf {path}'
-            subprocess.run(command, shell = True, executable="/bin/bash")
-            paths.append(path[:-7])
-        else:
-            print(f'Argument provided {path} is not a directory nor a .tar.gz')
-            sys.exit(1)   
-            
-    if args[5][-7:] == '.joblib': 
-        paths.append(args[5])
-    elif args[5][-7:] == '.tar.gz':
-        command = f'tar xf {args[5]}'    
+    commands = ['wget -q https://github.com/vitoriastavis/ufpr-medical-images/raw/main/features_o.tar.gz',
+    'wget -q https://github.com/vitoriastavis/ufpr-medical-images/raw/main/features_a.tar.gz',
+    'wget -q https://github.com/vitoriastavis/ufpr-medical-images/raw/main/features_op.tar.gz',
+    'wget -q https://github.com/vitoriastavis/ufpr-medical-images/raw/main/features_ap.tar.gz',
+    'wget -q https://github.com/vitoriastavis/ufpr-medical-images/raw/main/folds.tar.gz',
+    'tar -xf features_o.tar.gz',
+    'tar -xf features_a.tar.gz',
+    'tar -xf features_op.tar.gz',
+    'tar -xf features_ap.tar.gz',
+    'tar -xf folds.tar.gz']
+    
+    for command in commands:
         subprocess.run(command, shell = True, executable="/bin/bash")
-        paths.append('folds.joblib')
-    else:
-        print(f'{args[5]} is neither a .tar.gz or a .joblib')
-        sys.exit(1)    
         
+    paths = ['features_o', 'features_a', 'features_op', 'features_ap', 'folds.joblib']
+    
     return paths
 
 if __name__ == '__main__':
 
-    args = sys.argv
+    if len(sys.argv) != 2: 
+        print("\nUsage: python3 classification.py verbose")  
+        print("\nor python3 classification.py noverbose")  
+        print("\nto hide confusion matrices and classification reports") 
+        sys.exit(1)      
+
+    if sys.argv[1] == 'verbose':
+        verbose = True
+    elif sys.argv[1] == 'noverbose':
+        verbose = False
+    else: 
+        print("first argument should be either 'verbose' or 'noverbose")
+        sys.exit(1)        
     
     # Verify all the arguments for 
-    paths = check_parameters(args)
+    paths = load_data()
         
     # The variable 'folds' is a list of tuples
     # folds[0] is the first fold
@@ -255,17 +251,16 @@ if __name__ == '__main__':
     for i in range(len(folds)):
         df_o, df_a = create_dfs(paths[2], paths[3], folds[i])
         dataframes_p.append((df_o, df_a))
-
-    # Print information along classifications
-    verbose = True
-    
+  
     # Classification for non processed images
+    print('Classifying no preprocessed images')
     f1_knn_otsu_np = classifier('knn', dataframes_np, 'otsu', verbose)
     f1_knn_adapt_np = classifier('knn', dataframes_np, 'adaptive', verbose)
     f1_mlp_otsu_np = classifier('mlp', dataframes_np, 'otsu', verbose)
     f1_mlp_adapt_np = classifier('mlp', dataframes_np, 'adaptive', verbose)
 
     # Classification for processed images
+    print('Classifying preprocessed images')
     f1_knn_otsu_p = classifier('knn', dataframes_p, 'otsu', verbose)
     f1_knn_adapt_p = classifier('knn', dataframes_p, 'adaptive', verbose)
     f1_mlp_otsu_p = classifier('mlp', dataframes_p, 'otsu', verbose)
