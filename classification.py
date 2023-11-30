@@ -231,6 +231,7 @@ if __name__ == '__main__':
         sys.exit(1)        
     
     # Verify all the arguments for 
+    print('Downloading features...')
     paths = load_data()
         
     # The variable 'folds' is a list of tuples
@@ -253,14 +254,14 @@ if __name__ == '__main__':
         dataframes_p.append((df_o, df_a))
   
     # Classification for non processed images
-    print('Classifying no preprocessed images')
+    print('Classifying no preprocessed images...')
     f1_knn_otsu_np = classifier('knn', dataframes_np, 'otsu', verbose)
     f1_knn_adapt_np = classifier('knn', dataframes_np, 'adaptive', verbose)
     f1_mlp_otsu_np = classifier('mlp', dataframes_np, 'otsu', verbose)
     f1_mlp_adapt_np = classifier('mlp', dataframes_np, 'adaptive', verbose)
 
     # Classification for processed images
-    print('Classifying preprocessed images')
+    print('Classifying preprocessed images...')
     f1_knn_otsu_p = classifier('knn', dataframes_p, 'otsu', verbose)
     f1_knn_adapt_p = classifier('knn', dataframes_p, 'adaptive', verbose)
     f1_mlp_otsu_p = classifier('mlp', dataframes_p, 'otsu', verbose)
