@@ -2,9 +2,7 @@
 
 Immunohistochemistry image classification
 
-Usage: python3 classification.py features_o.tar.gz features_a.tar.gz features_op.tar.gz features_ap.tar.gz folds.tar.gz
-    or python3 classification.py features_o.tar.gz features_a features_op features_ap folds.tar.gz
-    if your feature files are already unpacked
+Usage: python3 classification.py features_o features_a features_op features_ap folds.tar.gz
 
 features_o: path for directory of features Otsu, images not preprocessed
 features_a: path for directory of features adaptive, images not preprocessed
