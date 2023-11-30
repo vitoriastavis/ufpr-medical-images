@@ -218,19 +218,15 @@ def check_parameters(args):
             print(f'Argument provided {path} is not a directory nor a .tar.gz')
             sys.exit(1)   
             
-        
-    command = f'tar xf {args[5]}'
-    try: 
+    if args[5][-7:] == '.joblib': 
+        paths.append(args[5])
+    elif args[5][-7:] == '.tar.gz':
+        command = f'tar xf {args[5]}'    
         subprocess.run(command, shell = True, executable="/bin/bash")
-    except: 
-        print('Couldnt find the folds.tar.gz')
-        sys.exit(1)    
-        
-    if not os.path.isfile("folds.joblib"):
-        print('Couldnt find the folds.joblib')
-        sys.exit(1)  
-    else: 
         paths.append('folds.joblib')
+    else:
+        print(f'{args[5]} is neither a .tar.gz or a .joblib')
+        sys.exit(1)    
         
     return paths
 
